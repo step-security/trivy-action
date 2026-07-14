@@ -171,7 +171,7 @@ runs:
       # "allowing select actions" feature can be used to whitelist the dependent action by a hash.
       # This is needed since some organizations have a policy to only allow pinned 3rd party actions to 
       # be used.
-      uses: step-security/setup-trivy@v0
+      uses: step-security/setup-trivy@ea3c0c68d8afd79fff8fe8eeffa77485066d297e # v0.3.1
       with:
         # version is pinned by default; using a floating tag like `latest` is the caller's responsibility
         version: ${{ inputs.version }} # zizmor: ignore[unpinned-tools]
@@ -185,7 +185,7 @@ runs:
 
     - name: Restore DB from cache
       if: ${{ inputs.cache == 'true' }}
-      uses: actions/cache@v6
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ inputs.cache-dir }}
         key: cache-trivy-${{ steps.date.outputs.date }}
