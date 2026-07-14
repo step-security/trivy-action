@@ -91,8 +91,14 @@ returnCode=$?
 if [ "${TRIVY_FORMAT:-}" = "github" ]; then
   if [ -n "${INPUT_GITHUB_PAT:-}" ]; then
     printf "\n Uploading GitHub Dependency Snapshot"
-    curl -H 'Accept: application/vnd.github+json' -H "Authorization: token ${INPUT_GITHUB_PAT}" \
-         "https://api.github.com/repos/$GITHUB_REPOSITORY/dependency-graph/snapshots" -d @"${TRIVY_OUTPUT:-}"
+    _auth_file=$(mktemp)
+    chmod 600 "$_auth_file"
+    printf 'Authorization: token %s' "${INPUT_GITHUB_PAT}" > "$_auth_file"
+    trap 'rm -f "$_auth_file"' EXIT
+    curl -H 'Accept: application/vnd.github+json' \
+         -H "@${_auth_file}" \
+         "https://api.github.com/repos/$GITHUB_REPOSITORY/dependency-graph/snapshots" \
+         -d @"${TRIVY_OUTPUT:-}"
   else
     printf "\n Failing GitHub Dependency Snapshot. Missing github-pat" >&2
   fi
