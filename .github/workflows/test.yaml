@@ -1,0 +1,45 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  BATS_LIB_PATH: '/usr/lib/'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Run zizmor
+        uses: step-security/zizmor-action@v0
+        with:
+          advanced-security: false
+
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Bats and bats libs
+        id: setup-bats
+        uses: bats-core/bats-action@4.0.0
+
+      - name: Install Trivy
+        run: make ensure-trivy TRIVY_INSTALL_DIR=/usr/local/bin
+
+      - name: Test
+        env:
+          BATS_LIB_PATH: ${{ steps.setup-bats.outputs.lib-path }}
+        run: make test
