@@ -5,7 +5,6 @@
 > [GitHub Action](https://github.com/features/actions) for [Trivy](https://github.com/aquasecurity/trivy)
 
 [![GitHub Release][release-img]][release]
-[![GitHub Marketplace][marketplace-img]][marketplace]
 [![License][license-img]][license]
 
 ![](docs/images/trivy-action.png)
@@ -48,11 +47,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Build an image from Dockerfile
         run: docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
       - name: Run Trivy vulnerability scanner
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
           format: 'table'
@@ -77,10 +76,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Run Trivy vulnerability scanner in fs mode
-      uses: step-security/trivy-action@v0.36.0
+      uses: step-security/trivy-action@v0
       with:
         scan-type: 'fs'
         scan-ref: '.'
@@ -121,7 +120,7 @@ If you want to disable caching, set the `cache` input to `false`, but we recomme
 
 ```yaml
     - name: Run Trivy scanner without cache
-      uses: step-security/trivy-action@v0.36.0
+      uses: step-security/trivy-action@v0
       with:
         scan-type: 'fs'
         scan-ref: '.'
@@ -151,7 +150,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup oras
-        uses: oras-project/setup-oras@v1
+        uses: oras-project/setup-oras@v2
 
       - name: Get current date
         id: date
@@ -172,7 +171,7 @@ jobs:
           rm javadb.tar.gz
 
       - name: Cache DBs
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: ${{ github.workspace }}/.cache/trivy
           key: cache-trivy-${{ steps.date.outputs.date }}
@@ -182,7 +181,7 @@ When running a scan, set the environment variables `TRIVY_SKIP_DB_UPDATE` and `T
 
 ```yaml
     - name: Run Trivy scanner without downloading DBs
-      uses: step-security/trivy-action@v0.36.0
+      uses: step-security/trivy-action@v0
       with:
         scan-type: 'image'
         scan-ref: 'myimage'
@@ -192,9 +191,9 @@ When running a scan, set the environment variables `TRIVY_SKIP_DB_UPDATE` and `T
 ```
 
 ### Trivy Setup
-By default the action calls [`aquasecurity/setup-trivy`](https://github.com/aquasecurity/setup-trivy) as the first step
+By default the action calls [`step-security/setup-trivy`](https://github.com/step-security/setup-trivy) as the first step
 which installs the `trivy` version specified by the `version` input.  If you have already installed `trivy` by other
-means, e.g. calling `aquasecurity/setup-trivy` directly, or are invoking this action multiple times then you can use the
+means, e.g. calling `step-security/setup-trivy` directly, or are invoking this action multiple times then you can use the
 `skip-setup-trivy` input to disable this step.
 
 #### Setting up Trivy Manually
@@ -211,16 +210,16 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Manual Trivy Setup
-      uses: aquasecurity/setup-trivy@v0.2.0
+      uses: step-security/setup-trivy@v0
       with:
         cache: true
         version: v0.72.0
 
     - name: Run Trivy vulnerability scanner in repo mode
-      uses: step-security/trivy-action@v0.36.0
+      uses: step-security/trivy-action@v0
       with:
         scan-type: 'fs'
         ignore-unfixed: true
@@ -250,11 +249,11 @@ jobs:
       contents: read
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # The first call to the action will invoke setup-trivy and install trivy
       - name: Generate Trivy Vulnerability Report
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           scan-type: "fs"
           output: trivy-report.json
@@ -263,14 +262,14 @@ jobs:
           exit-code: 0
 
       - name: Upload Vulnerability Scan Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: trivy-report
           path: trivy-report.json
           retention-days: 30
 
       - name: Fail build on High/Criticial Vulnerabilities
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           scan-type: "fs"
           format: table
@@ -289,7 +288,7 @@ Therefore, you can't install `Trivy` using the `setup-trivy` action.
 To fix this problem, you need to overwrite the token for `setup-trivy` using `token-setup-trivy` input:
 ```yaml
     - name: Run Trivy scanner without cache
-      uses: step-security/trivy-action@v0.36.0
+      uses: step-security/trivy-action@v0
       with:
         scan-type: 'fs'
         scan-ref: '.'
@@ -312,7 +311,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Generate tarball from image
       run: |
@@ -320,7 +319,7 @@ jobs:
         docker save -o vuln-image.tar <your-docker-image>
 
     - name: Run Trivy vulnerability scanner in tarball mode
-      uses: step-security/trivy-action@v0.36.0
+      uses: step-security/trivy-action@v0
       with:
         input: /github/workspace/vuln-image.tar
         severity: 'CRITICAL,HIGH'
@@ -344,10 +343,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Trivy vulnerability scanner
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           scan-type: "fs"
           scan-ref: .
@@ -373,10 +372,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Trivy vulnerability scanner
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           scan-type: "fs"
           scan-ref: .
@@ -402,14 +401,14 @@ jobs:
       security-events: write  # Required to upload SARIF files to Security tab
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build an image from Dockerfile
         run: |
           docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
 
       - name: Run Trivy vulnerability scanner
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
           format: 'sarif'
@@ -420,8 +419,6 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 ```
-
-You can find a more in-depth example here: https://github.com/aquasecurity/trivy-sarif-demo/blob/master/.github/workflows/scan.yml
 
 If you would like to upload SARIF results to GitHub Code scanning even upon a non zero exit code from Trivy Scan, you can add the following to your upload step:
 ```yaml
@@ -440,14 +437,14 @@ jobs:
       security-events: write  # Required to upload SARIF files to Security tab
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build an image from Dockerfile
         run: |
           docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
 
       - name: Run Trivy vulnerability scanner
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
           format: 'sarif'
@@ -482,10 +479,10 @@ jobs:
       security-events: write  # Required to upload SARIF files to Security tab
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           scan-type: 'fs'
           ignore-unfixed: true
@@ -519,10 +516,10 @@ jobs:
       security-events: write  # Required to upload SARIF files to Security tab
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Trivy vulnerability scanner with rootfs command
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           scan-type: 'rootfs'
           scan-ref: 'rootfs-example-binary'
@@ -559,10 +556,10 @@ jobs:
       security-events: write  # Required to upload SARIF files to Security tab
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Trivy vulnerability scanner in IaC mode
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           scan-type: 'config'
           hide-progress: true
@@ -616,10 +613,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           scan-type: 'fs'
           format: 'github'
@@ -649,7 +646,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Scan image in a private registry
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           image-ref: "private_image_registry/image_name:image_tag"
           scan-type: image
@@ -692,10 +689,10 @@ jobs:
       security-events: write  # Required to upload SARIF results to the GitHub Security tab
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Trivy vulnerability scanner
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
           format: 'sarif'
@@ -731,10 +728,10 @@ jobs:
       security-events: write  # Required to upload SARIF files to Security tab
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Trivy vulnerability scanner
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           image-ref: 'aws_account_id.dkr.ecr.region.amazonaws.com/imageName:${{ github.sha }}'
           format: 'sarif'
@@ -770,10 +767,10 @@ jobs:
       security-events: write  # Required to upload SARIF files to Security tab
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Trivy vulnerability scanner
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
           format: 'sarif'
@@ -806,10 +803,10 @@ jobs:
       security-events: write  # Required to upload SARIF files to Security tab
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Trivy vulnerability scanner
-        uses: step-security/trivy-action@v0.36.0
+        uses: step-security/trivy-action@v0
         with:
           image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
           format: 'sarif'
@@ -832,7 +829,7 @@ This step is especially useful for private repositories without [GitHub Advanced
 
 ```yaml
 - name: Run Trivy scanner
-  uses: step-security/trivy-action@v0.36.0
+  uses: step-security/trivy-action@v0
   with:
     scan-type: config
     hide-progress: true
@@ -912,8 +909,6 @@ When using the `trivy-config` [Input](#inputs), you can set options using the [T
 
 [release]: https://github.com/step-security/trivy-action/releases/latest
 [release-img]: https://img.shields.io/github/release/step-security/trivy-action.svg?logo=github
-[marketplace]: https://github.com/marketplace/actions/aqua-security-trivy
-[marketplace-img]: https://img.shields.io/badge/marketplace-trivy--action-blue?logo=github
 [license]: https://github.com/step-security/trivy-action/blob/master/LICENSE
 [license-img]: https://img.shields.io/github/license/step-security/trivy-action
 [trivy-env]: https://aquasecurity.github.io/trivy/latest/docs/configuration/#environment-variables

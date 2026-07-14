@@ -44,7 +44,7 @@ clean-cache:
 
 .PHONY: check-yq
 check-yq:
-	@command -v yq >/dev/null 2>&1 || (echo "yq is required but not installed. Install it from https://github.com/mikefarah/yq"; exit 1)
+	@command -v yq >/dev/null 2>&1 || (echo "yq is required but not installed. Install it from https://github.com/step-security/mikefarah-yq"; exit 1)
 
 bump-trivy: check-yq
 	@[ $$NEW_VERSION ] || ( echo "env 'NEW_VERSION' is not set"; exit 1 )

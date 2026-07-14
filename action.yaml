@@ -1,6 +1,6 @@
 name: 'Aqua Security Trivy'
 description: 'Scans container images for vulnerabilities with Trivy'
-author: 'Aqua Security'
+author: 'step-security'
 
 inputs:
   scan-type:
@@ -110,7 +110,7 @@ inputs:
   token-setup-trivy:
     description: >
       `token-setup-trivy` is required when `github.token` in invalid for `https://github.com` server.
-      See https://github.com/aquasecurity/setup-trivy/?tab=readme-ov-file#install-trivy-with-non-default-token for more details.
+      See https://github.com/step-security/setup-trivy/?tab=readme-ov-file#install-trivy-with-non-default-token for more details.
       `token-setup-trivy` is only used to fetch the Trivy repository in `setup-trivy`
     required: false
     ## ${{ github.token }} is default value for actions/checkout
@@ -122,11 +122,11 @@ runs:
   steps:
     - name: Install Trivy
       if: ${{ inputs.skip-setup-trivy == 'false' }}
-      # Pin to hash instead of tag for aquasecurity/setup-trivy action so that GitHub Actions 
+      # Pin to hash instead of tag for step-security/setup-trivy action so that GitHub Actions 
       # "allowing select actions" feature can be used to whitelist the dependent action by a hash.
       # This is needed since some organizations have a policy to only allow pinned 3rd party actions to 
       # be used.
-      uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
+      uses: step-security/setup-trivy@v0
       with:
         # version is pinned by default; using a floating tag like `latest` is the caller's responsibility
         version: ${{ inputs.version }} # zizmor: ignore[unpinned-tools]
@@ -140,7 +140,7 @@ runs:
 
     - name: Restore DB from cache
       if: ${{ inputs.cache == 'true' }}
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      uses: actions/cache@v6
       with:
         path: ${{ inputs.cache-dir }}
         key: cache-trivy-${{ steps.date.outputs.date }}
